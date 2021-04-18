@@ -13,7 +13,7 @@ requests('https://ncov.dxy.cn/ncovh5/view/pneumonia?from=timeline&isappinstalled
   eval($("#getListByCountryTypeService2true").html())
   
 
-  fs.writeFile(path.resolve(__dirname, 'data.json'),
+  fs.writeFile(path.resolve(__dirname, 'data/data.json'),
   JSON.stringify(window.getListByCountryTypeService2true), () => {
     console.log("保存成功")
   })

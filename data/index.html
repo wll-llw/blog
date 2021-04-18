@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界疫情地图</title>
+</head>
+<body>
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts.min.js" 
+      integrity="sha512-zFamwbwg+DGEoYuDPofuZ8AWVEg3kV/kH9mDXIlMDdXwJ3UPR1KRyGQm19cMrg5YNU6CIrHJxjlqpWUaHmtOBA==" crossorigin="anonymous"></script>
+    <script src="./worldZH.js"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        let container = document.getElementById('main')
+        var myChart = echarts.init(container);
+
+        fetch('./data.json').then(res => res.json()).then(res => {
+            let data = res.map(r => {
+                return {
+                    name: r.provinceName,
+                    value: [r.currentConfirmedCount, r.confirmedCount, r.suspectedCount, r.curedCount, r.deadCount]
+                }
+                
+            })
+
+            
+
+        // 指定图表的配置项和数据
+        var option = {
+            visualMap: {
+                dimension: 0,
+                pieces:[
+                    {gt: 4999999, label: '> 5000000', color:'purple'},            // [5000000, Infinity]
+                    {gt: 999999, lte: 4999999, label: '1000000-5000000', color: 'red'},  // [1000000, 5000000)
+                    {gt: 99999, lte: 999999, label: '100000-999999', color: 'orangered'},  // [100000, 1000000)
+                    {gt: 9999, lte: 99999, label: '10000-99999', color: 'orange'},   // [10000, 100000)
+                    {gt: 0, lte: 9999, label: '<10000', color: 'pink'},       // (0, 10000)
+                    {value: 0, color: '#fff', label: "0"},  
+                    // {lt: 0, label: '无'}                 // (-Infinity, 0)
+                ]
+            },
+            title: {
+                text: "全球疫情地图",
+                link:"",
+                textStyle: {
+                    fontSize:30
+                },
+                subtext: "@WLL",
+                left: "center",
+                padding: 15
+            },
+            tooltip: {
+                formatter({data}) {
+                    return `
+                    ${data.name}<br>
+                    当前确诊：${data.value[0]}<br>
+                    当前疑似：${data.value[1]}<br>
+                    总确诊：${data.value[2]}<br>
+                    治愈：${data.value[3]}<br>
+                    死亡：${data.value[4]}<br>
+                    `
+                }
+            },
+            series: [
+                {
+                    name: "全球疫情地图",
+                    type: 'map',
+                    map: "world",
+                    data
+                }
+            ]
+            
+            
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    })
+    </script>
+</body>
+</html>
